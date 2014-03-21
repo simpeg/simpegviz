@@ -315,7 +315,7 @@ class vtkTools(object):
 		iren.Initialize()
 		renwin = iren.GetRenderWindow()
 		renwin.Render()
-		iren.Start()
+		# iren.Start()
 
 
 	# Simple write/read VTK xml model functions.

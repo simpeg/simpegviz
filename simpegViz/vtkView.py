@@ -5,6 +5,7 @@ try:
 except Exception, e:
 	print 'VTK import error. Please ensure you have VTK installed to use this visualization package.'
 import SimPEG as simpeg
+import simpegViz.vtkTools as vtkSP
 
 class vtkView(object):
 	"""
@@ -105,7 +106,7 @@ class vtkView(object):
 			raise Exception('.extent has to be list or nparray of 6 integers.')
 		# Test the range of the values
 		loB = np.zeros(3,dtype=int)
-		upB = np.array(self._mesh.nCv - np.ones(3),dtype=int)
+		upB = np.array(self._mesh.vnC - np.ones(3),dtype=int)
 		# Test the bounds
 		change = 0
 		# Test for lower bounds, can't be smaller the 0
@@ -204,7 +205,7 @@ class vtkView(object):
 		"""
 		Reads the property and assigns to the object
 		"""
-		import SimPEG.visualize.vtk.vtkTools as vtkSP
+
 
 		# Test the property dictionary
 		if type(propdict) != dict:
@@ -227,7 +228,7 @@ class vtkView(object):
 		Open the VTK figure window and show the mesh.
 		"""
 		#vtkSP = simpeg.visualize.vtk.vtkTools
-		import SimPEG.visualize.vtk.vtkTools as vtkSP
+
 
 		# Make a renderer
 		self._ren = vtk.vtkRenderer()
@@ -301,6 +302,7 @@ class vtkView(object):
 
 		# Start the render Window
 		vtkSP.startRenderWindow(self._iren)
+		self._iren.Start()
 		# Close the window when exited
 		vtkSP.closeRenderWindow(self._iren)
 		del self._iren, self._renwin
@@ -309,14 +311,14 @@ class vtkView(object):
 
 if __name__ == '__main__':
 	
-
+	import simpegViz as spViz
 	#Make a mesh and model
 	x0 = np.zeros(3)
 	h1 = np.ones(60)*50
 	h2 = np.ones(60)*100
 	h3 = np.ones(50)*200
 
-	mesh = simpeg.mesh.TensorMesh([h1,h2,h3],x0)
+	mesh = simpeg.Mesh.TensorMesh([h1,h2,h3],x0)
 
 	# Make a models that correspond to the cells, faces and edges.
 	t = np.ones(mesh.nC)
@@ -325,7 +327,7 @@ if __name__ == '__main__':
 	t[100000:120000] = 50
 	models = {'C':{'Test':np.arange(0,mesh.nC),'Model':t, 'AllOnce':np.ones(mesh.nC)},'F':{'Test':np.arange(0,mesh.nF),'AllOnce':np.ones(mesh.nF)},'E':{'Test':np.arange(0,mesh.nE),'AllOnce':np.ones(mesh.nE)}}
 	# Make the vtk viewer object.
-	vtkViewer = simpeg.visualize.vtk.vtkView(mesh,models)
+	vtkViewer = spViz.vtkView(mesh,models)
 	# Set the .viewprop for which model to view
 	vtkViewer.viewprop = {'F':'Test'}
 	# Show the image
