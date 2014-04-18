@@ -72,7 +72,7 @@ class vtkTools(object):
 		Input:
 		:param mesh, SimPEG TensorMesh object - mesh to be transfer to VTK
 		:param model, dictionary of numpy.array - Name('s) and array('s).
-			Property array must be order hstack(Fx,Fy,Fz)
+			Property array must be order vstack(Fx,Fy,Fz)
 
 		Output:
         :rtype: vtkUnstructuredGrid object
@@ -105,7 +105,7 @@ class vtkTools(object):
 		# Cells -cell array
 		FCellArr = vtk.vtkCellArray()
 		FCellArr.SetNumberOfCells(mesh.nF)
-		FCellArr.SetCells(mesh.nF,npsup.numpy_to_vtkIdTypeArray(np.vstack([FxCellBlock,FyCellBlock,FzCellBlock]),deep=1))
+		FCellArr.SetCells(mesh.nF,npsup.numpy_to_vtkIdTypeArray(np.vstack([FxCellBlock,FyCellBlock,FzCellBlock]).ravel(),deep=1))
 		# Cell type
 		FCellType = npsup.numpy_to_vtk(vtk.VTK_QUAD*np.ones(mesh.nF,dtype='uint8'),deep=1)
 		# Cell location
@@ -136,7 +136,7 @@ class vtkTools(object):
 		Input:
 		:param mesh, SimPEG TensorMesh object - mesh to be transfer to VTK
 		:param model, dictionary of numpy.array - Name('s) and array('s).
-			Property array must be order hstack(Ex,Ey,Ez)
+			Property array must be order vstack(Ex,Ey,Ez)
 
 		Output:
         :rtype: vtkUnstructuredGrid object
@@ -167,7 +167,7 @@ class vtkTools(object):
 		# Cells -cell array
 		ECellArr = vtk.vtkCellArray()
 		ECellArr.SetNumberOfCells(mesh.nE)
-		ECellArr.SetCells(mesh.nE,npsup.numpy_to_vtkIdTypeArray(np.vstack([ExCellBlock,EyCellBlock,EzCellBlock]),deep=1))
+		ECellArr.SetCells(mesh.nE,npsup.numpy_to_vtkIdTypeArray(np.vstack([ExCellBlock,EyCellBlock,EzCellBlock]).ravel(),deep=1))
 		# Cell type
 		ECellType = npsup.numpy_to_vtk(vtk.VTK_LINE*np.ones(mesh.nE,dtype='uint8'),deep=1)
 		# Cell location
@@ -176,6 +176,7 @@ class vtkTools(object):
 		## Make the object
 		vtkObj = vtk.vtkUnstructuredGrid()
 		# Set the objects properties
+		vtkObj.Allocate(ECellType.GetNumberOfTuples(),1000)
 		vtkObj.SetPoints(vtkPts)
 		vtkObj.SetCells(ECellType,ECellLoc,ECellArr)
 
@@ -315,7 +316,7 @@ class vtkTools(object):
 		iren.Initialize()
 		renwin = iren.GetRenderWindow()
 		renwin.Render()
-		# iren.Start()
+		iren.Start()
 
 
 	# Simple write/read VTK xml model functions.

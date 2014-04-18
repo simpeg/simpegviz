@@ -302,7 +302,6 @@ class vtkView(object):
 
 		# Start the render Window
 		vtkSP.startRenderWindow(self._iren)
-		self._iren.Start()
 		# Close the window when exited
 		vtkSP.closeRenderWindow(self._iren)
 		del self._iren, self._renwin
@@ -311,6 +310,7 @@ class vtkView(object):
 
 if __name__ == '__main__':
 	
+	import SimPEG as simpeg
 	import simpegViz as spViz
 	#Make a mesh and model
 	x0 = np.zeros(3)
