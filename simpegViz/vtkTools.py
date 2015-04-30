@@ -277,34 +277,31 @@ class vtkTools(object):
 		return cellThres.GetOutput(), cellCore.GetOutput()
 
 	@staticmethod
-	def makePlaneClipper(vtkObj):
+	def makePlaneClipper(vtkObj,plane):
 		"""Makes a plane and clipper """
-		plane = vtk.vtkPlane()
 		clipper = vtk.vtkClipDataSet()
 		clipper.SetInputConnection(vtkObj.GetProducerPort())
 		clipper.SetClipFunction(plane)
 		clipper.InsideOutOff()
-		return clipper, plane
+		return clipper
 
 	@staticmethod
-	def makePlaneWidget(vtkObj,iren,plane,actor):
+	def makePlaneWidget(vtkObj,iren):
 		"""Make an interactive planeWidget"""
-
-		# Callback function
-		def movePlane(obj, events):
-		    obj.GetPlane(intPlane)
-		    intActor.VisibilityOn()
 
 		# Associate the line widget with the interactor
 		planeWidget = vtk.vtkImplicitPlaneWidget()
 		planeWidget.SetInteractor(iren)
-		planeWidget.SetPlaceFactor(1.25)
-		planeWidget.SetInput(vtkObj)
-		planeWidget.PlaceWidget()
+		planeWidget.SetInput(vtkObj )
+		planeWidget.SetPlaceFactor(1.05) # Increases the size of the widget bounds
+		planeWidget.PlaceWidget(vtkObj.GetBounds())
+		b1,b2,b3 = vtkObj.GetBounds()[::2]
+		planeWidget.SetOrigin(b1,b2,b3)
 		#planeWidget.AddObserver("InteractionEvent", movePlane)
-		planeWidget.SetScaleEnabled(0)
-		planeWidget.SetEnabled(1)
-		planeWidget.SetOutlineTranslation(0)
+		planeWidget.SetOutsideBounds(0) # Not allow the widget to move outside the input bounds
+		planeWidget.SetScaleEnabled(0) # Ability to scale with the mouse
+		planeWidget.SetEnabled(1) # Starts the widget
+		planeWidget.SetOutlineTranslation(0) # Abiltiy to move the widget with the mouse
 		planeWidget.GetPlaneProperty().SetOpacity(0.1)
 		return planeWidget
 

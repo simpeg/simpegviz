@@ -35,7 +35,7 @@ class vtkView(object):
 		self._iren = None
 		self._renwin = None
 		self._core = None
-		self._viewobj = None
+		self._vtkobj = None # Object for viewing, has threshold and exent built in
 		self._plane = None
 		self._clipper = None
 		self._widget = None
@@ -261,14 +261,21 @@ class vtkView(object):
 		else:
 			raise Exception("{:s} is not a valid viewprop. Has to be 'C':'F':'E'".format(imageType))
 		#self._vtkobj.GetCellData().SetActiveScalars(actScalar)
-		# Set up the plane, clipper and the user interaction.
+		# Set global variables to be used in the interactive widget
 		global intPlane, intActor
-		self._clipper, intPlane = vtkSP.makePlaneClipper(self._vtkobj)
+		# Set up the plane, clipper and the user interaction.
+		if not self._plane:
+			intPlane = vtk.vtkPlane()
+			self._plane = intPlane
+		else:
+			intPlane = self._plane
+		
+		self._clipper = vtkSP.makePlaneClipper(self._vtkobj,intPlane)
 		intActor = vtkSP.makeVTKLODActor(self._vtkobj,self._clipper)
-		self._widget = vtkSP.makePlaneWidget(self._vtkobj,self._iren,self._clipper.GetClipFunction(),self._actor)
+		self._actor = intActor	
+		self._widget = vtkSP.makePlaneWidget(self._vtkobj,self._iren)
+
 		# Callback function
-		self._plane = intPlane
-		self._actor = intActor
 		def movePlane(obj, events):
 			global intPlane, intActor
 			obj.GetPlane(intPlane)
